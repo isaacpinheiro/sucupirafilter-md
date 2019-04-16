@@ -82,7 +82,6 @@ public class Application {
         
         String sucupira = urlProps.getProperty("url.sucupira");
         String areaAvaliacao = urlProps.getProperty("url.areaAvaliacao");
-        String codigo = urlProps.getProperty("url.codigo");
         
         try {
             
@@ -151,17 +150,15 @@ public class Application {
                 matcher2 = hrefReplace.matcher(page);
                 page = matcher2.replaceAll("");
                 
-                if (page.split(regexProps.getProperty("regex.areaAvaliacao.hrefSplit"))[1].equals(codigo)) {
-                    matcher2 = aReplace.matcher(a);
-                    nome = matcher2.replaceAll("");
-                    AreaAvaliacao aa = new AreaAvaliacao();
-                    aa.setCodigo(codigo);
-                    aa.setNome(nome);
-                    aar.save(aa);
-                    log.info(aa.getCodigo() + " " + aa.getNome());
-                    buscarPorAreaConhecimento(aar, acr, ir, pr, cr);
-                    break;
-                }
+                String codigo = page.split(regexProps.getProperty("regex.areaAvaliacao.hrefSplit"))[1];
+                matcher2 = aReplace.matcher(a);
+                nome = matcher2.replaceAll("");
+                AreaAvaliacao aa = new AreaAvaliacao();
+                aa.setCodigo(codigo);
+                aa.setNome(nome);
+                aar.save(aa);
+                log.info(aa.getCodigo() + " " + aa.getNome());
+                buscarPorAreaConhecimento(aar, acr, ir, pr, cr, aa.getCodigo());
                 
             }
             
@@ -178,13 +175,13 @@ public class Application {
     }
     
     public static void buscarPorAreaConhecimento(AreaAvaliacaoRepository aar, AreaConhecimentoRepository acr,
-        InstituicaoRepository ir, ProgramaRepository pr, CursoRepository cr) throws IOException {
+        InstituicaoRepository ir, ProgramaRepository pr, CursoRepository cr, String codigoAreaAvaliacao) throws IOException {
         
         log.info("Buscando as informações da Área de Conhecimento e salvando no Banco de Dados.");
         Properties urlProps = getProps("src/main/resources/url.properties");
         Properties regexProps = getProps("src/main/resources/regex.properties");
         
-        AreaAvaliacao aa = aar.findByCodigo(urlProps.getProperty("url.codigo"));
+        AreaAvaliacao aa = aar.findByCodigo(codigoAreaAvaliacao);
         String sucupira = urlProps.getProperty("url.sucupira");
         String areaConhecimento = urlProps.getProperty("url.areaConhecimento");
         
